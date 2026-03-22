@@ -20,6 +20,13 @@ function str(Stringable|int|string|null $string = ''): ImmutableString
 
 /**
  * Creates an instance of {@see \Tempest\Support\Arr\ImmutableArray} using the given `$input`. If `$input` is not an array, it will be wrapped in one.
+ *
+ * @template TKey of array-key
+ * @template TValue
+ *
+ * @param array<TKey, TValue>|TValue $input
+ *
+ * @return ImmutableArray<TKey, TValue>
  */
 function arr(mixed $input = []): ImmutableArray
 {
