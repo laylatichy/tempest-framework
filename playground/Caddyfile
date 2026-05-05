@@ -1,0 +1,29 @@
+{
+	skip_install_trust
+	auto_https off
+	admin off
+
+	frankenphp {
+		num_threads 4
+		worker {
+			name playground_worker
+			file /app/playground/public/index.php
+			num 2
+			watch /app/playground/app/**/*.php
+			watch /app/playground/public/*.php
+			watch /app/packages/**/*.php
+			watch /app/src/**/*.php
+			max_consecutive_failures 10
+		}
+	}
+
+	log {
+		level INFO
+	}
+}
+
+:80 {
+	root * /app/playground/public
+	encode zstd br gzip
+	php_server
+}

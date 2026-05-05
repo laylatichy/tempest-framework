@@ -1,0 +1,31 @@
+{
+    "name": "tempest/playground",
+    "description": "Hello-world Tempest app for FrankenPHP worker mode experiments",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.5",
+        "tempest/framework": "@dev"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "app\\": "app/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "tempest/highlight": true
+        }
+    }
+}

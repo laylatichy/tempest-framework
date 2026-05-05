@@ -1,0 +1,64 @@
+name: tempest-playground
+
+services:
+    tempest-playground-app:
+        image:          shinsenter/frankenphp:php8.5
+        platform:       linux/amd64
+        container_name: tempest-playground-app
+        restart:        unless-stopped
+        environment:
+            DEBUG:                            1
+            DISABLE_AUTORUN_COMPOSER_INSTALL: 1
+            DISABLE_AUTORUN_GENERATING_INDEX: 1
+            DISABLE_GREETING:                 1
+            SKIP_FIXING_OWNERSHIP:            1
+            APP_USER:                         root
+            APP_GROUP:                        root
+            APP_PATH:                         /app/playground
+            DOCUMENT_ROOT:                    public
+            FRANKENPHP_CONFIG:                |
+                                              num_threads 4
+                                              worker {
+                                                  name playground_worker
+                                                  file /app/playground/public/index.php
+                                                  num 2
+                                                  watch /app/playground/app/**/*.php
+                                                  watch /app/playground/public/*.php
+                                                  watch /app/packages/**/*.php
+                                                  watch /app/src/**/*.php
+                                                  max_consecutive_failures 10
+                                              }
+        working_dir: /app/playground
+        volumes:
+            - ../:/app
+        ports:
+            - "20200:80"
+        depends_on:
+            tempest-playground-mysql:
+                condition: service_healthy
+        networks:
+            - tempest-playground-network
+        tty: true
+
+    tempest-playground-mysql:
+        image:          mysql:9.6.0
+        container_name: tempest-playground-mysql
+        restart:        unless-stopped
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE:      playground
+            MYSQL_USER:          app
+            MYSQL_PASSWORD:      app
+        ports:
+            - "20206:3306"
+        healthcheck:
+            test:     ["CMD-SHELL", "mysql --user=app --password=app --execute 'SHOW DATABASES;'"]
+            interval: 5s
+            timeout:  10s
+            retries:  30
+        networks:
+            - tempest-playground-network
+
+networks:
+    tempest-playground-network:
+        driver: bridge
